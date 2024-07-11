@@ -1,0 +1,3 @@
+#!/bin/bash
+/Users/zyc/Desktop/2audio_answer/venv/bin/python -m grpc_tools.protoc "$@"
+

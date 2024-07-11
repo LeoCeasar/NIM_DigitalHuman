@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package audio2face;
+
+service Audio2Face {
+  rpc PushAudioStream (stream PushAudioStreamRequest) returns (PushAudioStreamResponse);
+}
+
+message PushAudioStreamRequest {
+  bytes audio_data = 1;
+}
+
+message PushAudioStreamResponse {
+  bool success = 1;
+  string message = 2;
+}
+

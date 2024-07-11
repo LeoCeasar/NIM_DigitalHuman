@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Answer Machine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 48%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        audio, .response {
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Automated Answer Machine</h1>
+        <form id="textForm">
+            <input type="text" id="userText" placeholder="Enter your question" required>
+            <div class="button-container">
+                <button id="synthesizeButton" type="button">Synthesize Audio</button>
+                <button id="generateTextButton" type="button">Generate Text</button>
+            </div>
+        </form>
+        <audio id="audioPlayer" controls style="display:none;">
+            <source id="audioSource" src="" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+        <div id="textResponse" class="response" style="display:none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('synthesizeButton').addEventListener('click', async function(event) {
+            event.preventDefault();
+            const userText = document.getElementById('userText').value;
+            const response = await fetch('http://localhost:8000/synthesize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: userText })
+            });
+            const data = await response.json();
+            const audioPlayer = document.getElementById('audioPlayer');
+            const audioSource = document.getElementById('audioSource');
+            audioSource.src = data.audio_url;
+            audioPlayer.style.display = 'block';
+            audioPlayer.load();
+            audioPlayer.play();
+        });
+
+        document.getElementById('generateTextButton').addEventListener('click', async function() {
+            const userText = document.getElementById('userText').value;
+            const response = await fetch('http://localhost:8000/answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: userText })
+            });
+            const data = await response.json();
+            const textResponse = document.getElementById('textResponse');
+            textResponse.textContent = 'Generated Text: ' + data.answer;
+            textResponse.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
