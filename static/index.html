@@ -73,13 +73,13 @@
             <source id="audioSource" src="" type="audio/wav">
             Your browser does not support the audio element.
         </audio>
-        <div id="textResponse" class="response" style="display:none;"></div>
+        <div id="textResponse" class="response"></div>
     </div>
 
     <script>
         document.getElementById('synthesizeButton').addEventListener('click', async function(event) {
             event.preventDefault();
-            const userText = document.getElementById('userText').value;
+            const userText = document.getElementById('textResponse').textContent;
             const response = await fetch('http://localhost:8000/synthesize', {
                 method: 'POST',
                 headers: {
@@ -90,7 +90,7 @@
             const data = await response.json();
             const audioPlayer = document.getElementById('audioPlayer');
             const audioSource = document.getElementById('audioSource');
-            audioSource.src = data.audio_url;
+            audioSource.src = "http://localhost:8000/audio/output.wav";
             audioPlayer.style.display = 'block';
             audioPlayer.load();
             audioPlayer.play();
@@ -107,7 +107,7 @@
             });
             const data = await response.json();
             const textResponse = document.getElementById('textResponse');
-            textResponse.textContent = 'Generated Text: ' + data.answer;
+            textResponse.textContent = data.answer;
             textResponse.style.display = 'block';
         });
     </script>
